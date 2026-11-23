@@ -2,7 +2,9 @@ package main
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
+	"os"
 
 	_ "github.com/lib/pq"
 )
@@ -40,7 +42,10 @@ type PostgresStore struct {
 // NewPostgresStore creates a new PostgresStore
 func NewPostgresStore() (*PostgresStore, error) {
 	// connStr is the connection string used to connect to the Postgres database
-	connStr := "postgresql://neondb_owner:6NPyaLzZwH9s@ep-long-unit-a1aos54v.ap-southeast-1.aws.neon.tech/neondb?sslmode=require"
+	connStr := os.Getenv("DATABASE_URL")
+	if connStr == "" {
+		return nil, errors.New("DATABASE_URL is not set")
+	}
 	// sql.Open opens a new database connection using the provided driver and source name
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
